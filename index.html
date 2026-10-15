@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>У меня есть вопрос...</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #fff0f5; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #4a4a4a;
+            overflow-x: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .screen {
+            display: none;
+            text-align: center;
+            background: white;
+            padding: 30px 20px;
+            border-radius: 24px;
+            box-shadow: 0 12px 30px rgba(255, 182, 193, 0.3);
+            width: 90%;
+            max-width: 380px;
+            box-sizing: border-box;
+            margin: 20px auto;
+            position: relative; 
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            font-size: 22px;
+            margin-bottom: 5px;
+            color: #5d4037;
+            font-weight: 800;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #8c7b75;
+            margin-bottom: 25px;
+            margin-top: 5px;
+        }
+
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            height: 50px;
+            transition: all 0.3s ease;
+        }
+
+        button {
+            background-color: #ff9a9e;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 120px;
+            z-index: 10;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        button:hover {
+            background-color: #ff7e84;
+        }
+
+        #btnNo {
+            background-color: #f5f5f5;
+            color: #888;
+        }
+
+        .food-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .food-card {
+            background: white;
+            border: 2px solid #ffe4e1;
+            border-radius: 20px;
+            padding: 15px 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(255, 182, 193, 0.05);
+        }
+
+        .food-card .emoji {
+            font-size: 40px;
+            transition: transform 0.2s;
+        }
+
+        .food-card .label {
+            font-size: 14px;
+            font-weight: bold;
+            color: #5d4037;
+        }
+
+        .food-card:hover {
+            transform: translateY(-2px);
+            border-color: #ff9a9e;
+        }
+
+        .food-card.selected {
+            border-color: #ff5e7e;
+            background-color: #fff5f6;
+            box-shadow: 0 6px 15px rgba(255, 94, 126, 0.15);
+        }
+
+        .food-card.selected .emoji {
+            transform: scale(1.1);
+        }
+
+        /* Поле для пожеланий */
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border: 2px solid #ffe4e1;
+            border-radius: 15px;
+            font-size: 14px;
+            box-sizing: border-box;
+            background-color: #fffafb;
+            color: #4a4a4a;
+            outline: none;
+            font-family: inherit;
+            resize: none;
+            height: 70px;
+            transition: border-color 0.2s;
+        }
+
+        textarea:focus {
+            border-color: #ff9a9e;
+        }
+
+        textarea::placeholder {
+            color: #bcaaa4;
+        }
+
+        .gif-container {
+            margin-bottom: 15px;
+            font-size: 65px;
+        }
+
+        .single-btn {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Экран 1: Вопрос -->
+    <div id="screen1" class="screen active">
+        <div class="gif-container">👋</div>
+        <h2>Сходим куда-нибудь вместе?</h2>
+        <p class="subtitle">У меня есть к тебе предложение</p>
+        <div class="buttons-container">
+            <button id="btnYes">Да</button>
+            <button id="btnNo">Нет</button>
+        </div>
+    </div>
+
+    <!-- Экран 2: Время -->
+    <div id="screen2" class="screen">
+        <div class="gif-container">🕰️</div>
+        <h2>Будь готова к 22:00! 😉</h2>
+        <p class="subtitle">Освободи этот вечер</p>
+        <input type="hidden" id="timeInput" value="22:00">
+        <button id="btnNext" class="single-btn">Что дальше?</button>
+    </div>
+
+    <!-- Экран 3: Еда / Напитки и Пожелания -->
+    <div id="screen3" class="screen">
+        <h2>Куда пойдем?</h2>
+        <p class="subtitle">Выбери, что тебе в кайф</p>
+        
+        <div class="food-grid">
+            <div class="food-card" data-value="Пицца">
+                <span class="emoji">🍕</span>
+                <span class="label">Пицца</span>
+            </div>
+            <div class="food-card" data-value="Суши">
+                <span class="emoji">🍱</span>
+                <span class="label">Суши</span>
+            </div>
+            <div class="food-card" data-value="Бургер">
+                <span class="emoji">🍔</span>
+                <span class="label">Бургер</span>
+            </div>
+            <div class="food-card" data-value="Паста">
+                <span class="emoji">🍝</span>
+                <span class="label">Паста</span>
+            </div>
+            <div class="food-card" data-value="Кофе">
+                <span class="emoji">☕</span>
+                <span class="label">Выпить кофе</span>
+            </div>
+            <div class="food-card" data-value="Рамен">
+                <span class="emoji">🍲</span>
+                <span class="label">Рамен</span>
+            </div>
+        </div>
+
+        <textarea id="wishesInput" placeholder="Есть особые пожелания? (необязательно)"></textarea>
+
+        <button id="btnSubmit" class="single-btn">Отправить</button>
+    </div>
+
+    <!-- Экран 4: Финал -->
+    <div id="screen4" class="screen">
+        <div class="gif-container">✨</div>
+        <h2>Договорились! До встречи.</h2>
+        <p class="subtitle">Буду ждать!</p>
+    </div>
+
+    <script>
+        // --- НАСТРОЙКИ TELEGRAM ---
+        const TELEGRAM_BOT_TOKEN = '8530821460:AAEXK7XPEaGPPjVG5H8oGaMZnYCZq1QxAw8';
+        const TELEGRAM_CHAT_ID = '836321885';
+
+        const screen1 = document.getElementById('screen1');
+        const screen2 = document.getElementById('screen2');
+        const screen3 = document.getElementById('screen3');
+        const screen4 = document.getElementById('screen4');
+
+        const btnYes = document.getElementById('btnYes');
+        const btnNo = document.getElementById('btnNo');
+        const btnNext = document.getElementById('btnNext');
+        const btnSubmit = document.getElementById('btnSubmit');
+
+        let selectedFood = ""; 
+
+        function moveButton() {
+            const cardRect = screen1.getBoundingClientRect();
+            const btnRect = btnNo.getBoundingClientRect();
+            
+            const maxX = cardRect.width - btnRect.width - 20; 
+            const maxY = cardRect.height - btnRect.height - 20;
+            
+            const randomX = Math.floor(Math.random() * maxX) + 10;
+            const randomY = Math.floor(Math.random() * maxY) + 10;
+
+            btnNo.style.position = 'absolute';
+            btnNo.style.left = `${randomX}px`;
+            btnNo.style.top = `${randomY}px`;
+        }
+
+        btnNo.addEventListener('mouseover', moveButton);
+        btnNo.addEventListener('touchstart', (e) => {
+            e.preventDefault(); 
+            moveButton();
+        });
+
+        btnYes.addEventListener('click', () => {
+            screen1.classList.remove('active');
+            screen2.classList.add('active');
+        });
+
+        btnNext.addEventListener('click', () => {
+            screen2.classList.remove('active');
+            screen3.classList.add('active');
+        });
+
+        const foodCards = document.querySelectorAll('.food-card');
+        foodCards.forEach(card => {
+            card.addEventListener('click', () => {
+                foodCards.forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                selectedFood = card.getAttribute('data-value');
+            });
+        });
+
+        btnSubmit.addEventListener('click', () => {
+            if (!selectedFood) {
+                alert('Выбери вариант! 😉');
+                return;
+            }
+
+            const time = document.getElementById('timeInput').value;
+            const wishes = document.getElementById('wishesInput').value.trim();
+            
+            let message = `Новая встреча!\nВремя: ${time}\nВыбор: ${selectedFood}`;
+            if (wishes) {
+                message += `\nПожелания: ${wishes}`;
+            }
+
+            const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${encodeURIComponent(message)}`;
+            fetch(url).catch(err => console.error(err));
+
+            screen3.classList.remove('active');
+            screen4.classList.add('active');
+        });
+    </script>
+</body>
+</html>
