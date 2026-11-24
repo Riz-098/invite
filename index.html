@@ -103,6 +103,101 @@
             width: 100%;
         }
 
+        /* --- БАРАБАН ВЫБОРА ВРЕМЕНИ --- */
+        .time-picker-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 150px;
+            margin: 15px auto 25px auto;
+            width: 220px;
+            overflow: hidden;
+        }
+
+        /* Подсветка выбранной строки по центру */
+        .time-picker-highlight {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 50px;
+            transform: translateY(-50%);
+            background: #fff0f5;
+            border: 2px solid #ffe4e1;
+            border-radius: 16px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Градиентное затухание сверху и снизу */
+        .time-picker-wrapper::before,
+        .time-picker-wrapper::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 45px;
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        .time-picker-wrapper::before {
+            top: 0;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0));
+        }
+
+        .time-picker-wrapper::after {
+            bottom: 0;
+            background: linear-gradient(to top, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0));
+        }
+
+        .wheel-column {
+            height: 150px;
+            width: 80px;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+            scrollbar-width: none;
+            position: relative;
+            z-index: 2;
+        }
+
+        .wheel-column::-webkit-scrollbar {
+            display: none;
+        }
+
+        .wheel-item {
+            height: 50px;
+            line-height: 50px;
+            font-size: 24px;
+            font-weight: 700;
+            color: #c5b4ae;
+            scroll-snap-align: center;
+            transition: all 0.15s ease;
+            cursor: pointer;
+        }
+
+        .wheel-item.active {
+            color: #5d4037;
+            font-size: 30px;
+            font-weight: 800;
+        }
+
+        .wheel-spacer {
+            height: 50px;
+            pointer-events: none;
+        }
+
+        .wheel-colon {
+            font-size: 28px;
+            font-weight: 800;
+            color: #ff9a9e;
+            z-index: 2;
+            padding: 0 4px 4px 4px;
+        }
+
         /* --- СПИСОК РЕСТОРАНОВ (СЕТКА 2 КОЛОНКИ) --- */
         .restaurant-list {
             display: grid;
@@ -286,11 +381,19 @@
         </div>
     </div>
 
-    <!-- Экран 2: Время -->
+    <!-- Экран 2: Выбор времени -->
     <div id="screen2" class="screen">
         <div class="gif-container">🕰️</div>
-        <h2>Будь готова к 22:00! 😉</h2>
-        <p class="subtitle">Освободи этот вечер</p>
+        <h2>Во сколько встретимся?</h2>
+        <p class="subtitle">Покрути, чтобы выбрать удобное время</p>
+
+        <div class="time-picker-wrapper">
+            <div class="time-picker-highlight"></div>
+            <div id="hourWheel" class="wheel-column"></div>
+            <div class="wheel-colon">:</div>
+            <div id="minuteWheel" class="wheel-column"></div>
+        </div>
+
         <input type="hidden" id="timeInput" value="22:00">
         <button id="btnNext" class="single-btn">Что дальше?</button>
     </div>
@@ -340,7 +443,7 @@
             {
                 name: "Siesta Fiesta",
                 tag: "Эстетика • Интерьер",
-                description: "Место в первую очередь про вайб и красоту: приглушённый тёплый свет, дерево, два этажа и очень эстетичная атмосфера. Еда просто хорошая и понятная без гастрономического «вау», но вкусно поужинать и красиво посидеть вдвоём самое то.",
+                description: "Место в первую очередь про вайб и красоту: приглушённый тёплый свет, дерево, два этажа и очень эстетичная атмосфера. Еда просто хорошая и понятная — без гастрономического «вау», но вкусно поужинать и красиво посидеть вдвоём самое то.",
                 photos: [
                     "Rest.1.1.webp",
                     "Rest.1.2.webp"
@@ -349,7 +452,7 @@
             {
                 name: "Osteria Betulla",
                 tag: "Италия • Вау-еда",
-                description: "Интерьер тут максимально простой и минималистичный светлые стены, дерево и ничего лишнего. Зато сюда идут именно за вкусом: еда просто разрыв, реально на уровне «вау».",
+                description: "Интерьер тут максимально простой и минималистичный — светлые стены, дерево и ничего лишнего. Зато сюда идут именно за вкусом: еда просто разрыв, реально на уровне «вау».",
                 photos: [
                     "Rest.2.1.webp",
                     "Rest.2.2.webp"
@@ -358,7 +461,7 @@
             {
                 name: "Хачапури и Вино",
                 tag: "Грузия • Вино и уют",
-                description: "Тёплое и очень уютное место с деревянным интерьером и мягким светом. Идеально, если хочется душевного вечера и реально вкусной грузинской кухни горячие хачапури и хорошее вино.",
+                description: "Тёплое и очень уютное место с деревянным интерьером и мягким светом. Идеально, если хочется душевного вечера и реально вкусной грузинской кухни — горячие хачапури и хорошее вино.",
                 photos: [
                     "Rest.3.1.webp",
                     "Rest.3.2.webp"
@@ -375,7 +478,7 @@
             {
                 name: "The Бык",
                 tag: "Мясо • Стейки и гриль",
-                description: "Стильный брутальный лофт с кирпичными стенами, живой зеленью и приглушённым светом. Идеальный вариант, если хочется максимально сытного вечера сочные стейки, бургеры и отличное мясо без лишнего пафоса.",
+                description: "Стильный брутальный лофт с кирпичными стенами, живой зеленью и приглушённым светом. Идеальный вариант, если хочется максимально сытного вечера — сочные стейки, бургеры и отличное мясо без лишнего пафоса.",
                 photos: [
                     "Rest.5.1.webp",
                     "Rest.5.2.webp"
@@ -384,7 +487,7 @@
             {
                 name: "Грис",
                 tag: "Греция • Уют и закуски",
-                description: "Очень тёплый и стильный интерьер с открытой кухней, медной посудой и мягким светом. Классный вариант для уютного вечера с вкусной греческой кухней тёплые лепёшки, закуски в стол и средиземноморский вайб.",
+                description: "Очень тёплый и стильный интерьер с открытой кухней, медной посудой и мягким светом. Классный вариант для уютного вечера с вкусной греческой кухней — тёплые лепёшки, закуски в стол и средиземноморский вайб.",
                 photos: [
                     "Rest.6.1.webp",
                     "Rest.6.2.webp"
@@ -404,6 +507,10 @@
         const btnBack = document.getElementById('btnBack');
         const btnSubmit = document.getElementById('btnSubmit');
 
+        const hourWheel = document.getElementById('hourWheel');
+        const minuteWheel = document.getElementById('minuteWheel');
+        const timeInput = document.getElementById('timeInput');
+
         const restaurantListEl = document.getElementById('restaurantList');
         const detailImg = document.getElementById('detailImg');
         const detailName = document.getElementById('detailName');
@@ -414,6 +521,59 @@
 
         let currentRestaurant = null;
         let currentPhotoIndex = 0;
+
+        // --- ЛОГИКА БАРАБАНА ВРЕМЕНИ ---
+        const ITEM_HEIGHT = 50;
+        const hours = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'));
+        const minutes = ['00', '05', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55'];
+        let selectedHour = '22';
+        let selectedMinute = '00';
+
+        function buildWheel(container, values, onChange) {
+            container.innerHTML = '';
+            const topSpacer = document.createElement('div');
+            topSpacer.className = 'wheel-spacer';
+            container.appendChild(topSpacer);
+
+            values.forEach((val, idx) => {
+                const item = document.createElement('div');
+                item.className = 'wheel-item';
+                item.textContent = val;
+                item.addEventListener('click', () => {
+                    container.scrollTo({ top: idx * ITEM_HEIGHT, behavior: 'smooth' });
+                });
+                container.appendChild(item);
+            });
+
+            const bottomSpacer = document.createElement('div');
+            bottomSpacer.className = 'wheel-spacer';
+            container.appendChild(bottomSpacer);
+
+            function updateActive() {
+                const index = Math.round(container.scrollTop / ITEM_HEIGHT);
+                const clamped = Math.max(0, Math.min(values.length - 1, index));
+                const items = container.querySelectorAll('.wheel-item');
+                items.forEach((el, i) => el.classList.toggle('active', i === clamped));
+                onChange(values[clamped]);
+            }
+
+            container.addEventListener('scroll', updateActive);
+            return updateActive;
+        }
+
+        function syncTimeInput() {
+            timeInput.value = `${selectedHour}:${selectedMinute}`;
+        }
+
+        const updateHours = buildWheel(hourWheel, hours, (val) => {
+            selectedHour = val;
+            syncTimeInput();
+        });
+
+        const updateMinutes = buildWheel(minuteWheel, minutes, (val) => {
+            selectedMinute = val;
+            syncTimeInput();
+        });
 
         // Убегающая кнопка "Нет"
         function moveButton() {
@@ -440,6 +600,11 @@
         btnYes.addEventListener('click', () => {
             screen1.classList.remove('active');
             screen2.classList.add('active');
+            // Ставим барабан на 22:00 при открытии экрана
+            hourWheel.scrollTop = 22 * ITEM_HEIGHT;
+            minuteWheel.scrollTop = 0;
+            updateHours();
+            updateMinutes();
         });
 
         btnNext.addEventListener('click', () => {
@@ -512,7 +677,7 @@
         btnSubmit.addEventListener('click', () => {
             if (!currentRestaurant) return;
 
-            const time = document.getElementById('timeInput').value;
+            const time = timeInput.value;
             const wishes = document.getElementById('wishesInput').value.trim();
             
             let message = `Новая встреча!\nВремя: ${time}\nРесторан: ${currentRestaurant.name}`;
